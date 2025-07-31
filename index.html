@@ -1,0 +1,296 @@
+++<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LZR Injector</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .glow-text {
+      color: #00f7ff;
+      text-shadow: 0 0 5px #00f7ff, 0 0 15px #00f7ff, 0 0 30px #00f7ff;
+    }
+
+    .pulse-glow {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 10px #00f7ff; }
+      50% { transform: scale(1.05); box-shadow: 0 0 20px #00f7ff; }
+    }
+
+    .fade-in {
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .hidden-section {
+      display: none;
+    }
+
+    .golden-text {
+      font-weight: bold;
+      animation: gold-glow 2s infinite;
+    }
+
+    @keyframes gold-glow {
+      0% { color: #FFD700; text-shadow: 0 0 5px #FFD700; }
+      50% { color: #FFA500; text-shadow: 0 0 15px #FFA500; }
+      100% { color: #FFD700; text-shadow: 0 0 5px #FFD700; }
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 17ch }
+    }
+
+    .animate-typing {
+      animation: typing 2s steps(17) infinite alternate;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 2px solid #FFD700;
+    }
+
+    /* Cube styles */
+    .perspective-800 {
+      perspective: 800px;
+    }
+
+    .cube {
+      width: 100px;
+      height: 100px;
+      transform-style: preserve-3d;
+      transform: rotateX(-30deg) rotateY(30deg);
+      animation: spinCube 8s infinite linear;
+    }
+
+    @keyframes spinCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .face {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(145deg, #0ff, #00f7ff);
+      opacity: 0.7;
+      border: 2px solid #00f7ff;
+      box-shadow: 0 0 10px #00f7ff;
+    }
+
+    .front  { transform: translateZ(50px); }
+    .back   { transform: rotateY(180deg) translateZ(50px); }
+    .right  { transform: rotateY(90deg) translateZ(50px); }
+    .left   { transform: rotateY(-90deg) translateZ(50px); }
+    .top    { transform: rotateX(90deg) translateZ(50px); }
+    .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+    /* FAB styles */
+    .fab-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #0088cc; /* Telegram blue */
+      color: white;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      z-index: 1000;
+      text-decoration: none; /* Remove underline for links */
+    }
+
+    .fab-button:hover {
+      background-color: #007bb6;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col justify-center items-center px-4">
+
+  <div id="landing" class="text-center space-y-6 fade-in">
+    <h1 class="text-5xl font-bold glow-text">LZR INJECTOR</h1>
+    <p class="text-lg text-gray-300 max-w-xl mx-auto">Unlock next-gen predictions with advanced pattern AI.</p>
+
+    <div class="w-40 h-40 mx-auto relative perspective-800 mt-10">
+      <div class="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face left"></div>
+        <div class="face right"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+    </div>
+
+    <button onclick="showPredictionApp()" class="mt-6 bg-cyan-600 hover:bg-cyan-800 text-white text-xl px-8 py-3 rounded-lg pulse-glow transition-all shadow-lg">
+      Activate Injector
+    </button>
+  </div>
+
+  <div id="prediction-app" class="hidden-section w-full">
+    <div class="text-center mt-8">
+      <div class="h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mb-2"></div>
+      <h1 class="text-4xl font-bold golden-text">SAHIL-X</h1>
+      <div class="h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mt-2 mb-6"></div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-between items-center max-w-3xl mx-auto my-4 text-lg font-semibold golden-text">
+      <div>Period: <span id="thai-period"></span></div>
+      <div>Timer: <span id="thai-timer"></span></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center max-w-3xl mx-auto mb-6">
+      <div class="bg-gray-800 p-6 rounded shadow-lg">
+        <h2 class="text-xl mb-2">Number</h2>
+        <div id="number-prediction" class="text-5xl golden-text">--</div>
+      </div>
+      <div class="bg-gray-800 p-6 rounded shadow-lg">
+        <h2 class="text-xl mb-2">Big/Small</h2>
+        <div id="size-prediction" class="text-5xl golden-text">--</div>
+      </div>
+      <div class="bg-gray-800 p-6 rounded shadow-lg">
+        <h2 class="text-xl mb-2">Color</h2>
+        <div id="color-prediction" class="text-5xl golden-text">--</div>
+      </div>
+    </div>
+
+    <div class="text-center mb-8">
+      <button onclick="generatePrediction()" class="bg-blue-700 hover:bg-blue-900 px-8 py-3 rounded-lg text-xl font-bold transition-all shadow-lg">Get Prediction</button>
+    </div>
+
+    <div class="bg-gray-900 p-4 rounded-lg shadow-lg max-w-3xl mx-auto text-center mb-8">
+      <h2 class="text-xl golden-text mb-4">Prediction History</h2>
+      <div id="history" class="space-y-2"></div>
+    </div>
+
+    <div id="loading-spinner" class="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-90 z-50 hidden">
+      <div class="flex flex-col items-center gap-6">
+        <div class="cube">
+          <div class="face front"></div>
+          <div class="face back"></div>
+          <div class="face left"></div>
+          <div class="face right"></div>
+          <div class="face top"></div>
+          <div class="face bottom"></div>
+        </div>
+        <div class="text-white text-xl font-bold animate-typing">Loading Prediction...</div>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://t.me/SAH1LX" target="_blank" class="fab-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4 20-7Z"/><path d="M15 7L6.5 15.5"/></svg>
+  </a>
+
+  <script>
+    function showPredictionApp() {
+      document.getElementById('landing').style.display = 'none';
+      document.getElementById('prediction-app').style.display = 'block';
+    }
+
+    const historyResults = [];
+
+    function updatePeriodAndTimer() {
+      const calendar = new Date();
+      const seconds = calendar.getUTCSeconds();
+      const remainingSeconds = 60 - seconds;
+      const minutes = calendar.getUTCMinutes();
+      const totalMinutes = calendar.getUTCHours() * 60 + minutes;
+
+      const period = `${calendar.getUTCFullYear()}${String(calendar.getUTCMonth()+1).padStart(2,'0')}${String(calendar.getUTCDate()).padStart(2,'0')}1000${10001 + totalMinutes}`;
+      const timerText = `00 : ${String(remainingSeconds).padStart(2, '0')}`;
+
+      document.getElementById('thai-period').textContent = period;
+      document.getElementById('thai-timer').textContent = timerText;
+    }
+
+    setInterval(updatePeriodAndTimer, 1000);
+
+    function getColor(num) {
+      if ([1, 4, 7].includes(num)) return 'Green';
+      if ([2, 5, 8].includes(num)) return 'Violet';
+      return 'Red';
+    }
+
+    function getBigSmall(num) {
+      return num >= 5 ? 'Big' : 'Small';
+    }
+
+    function getPatternBasedPrediction() {
+      const last = historyResults.map(r => r.number);
+      if (last.length === 0) return Math.floor(Math.random() * 10);
+
+      const allSame = last.every(n => n === last[0]);
+      if (allSame && last.length >= 2) return (last[0] + 1) % 10;
+
+      if (last.length >= 3) {
+        const diff1 = last[1] - last[0];
+        const diff2 = last[2] - last[1];
+        if (diff1 === diff2) return (last[last.length - 1] + diff1 + 10) % 10;
+      }
+
+      const freq = {};
+      last.forEach(num => freq[num] = (freq[num] || 0) + 1);
+      const mostFreq = Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+      return (parseInt(mostFreq) + 1) % 10;
+    }
+
+    function generatePrediction() {
+      document.getElementById('loading-spinner').classList.remove('hidden');
+
+      setTimeout(() => {
+        const predictedNumber = getPatternBasedPrediction();
+        const now = new Date();
+        const totalMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+        const periodNumber = `${now.getUTCFullYear()}${String(now.getUTCMonth()+1).padStart(2,'0')}${String(now.getUTCDate()).padStart(2,'0')}1000${10001 + totalMinutes}`;
+
+        document.getElementById('number-prediction').textContent = predictedNumber;
+        document.getElementById('size-prediction').textContent = getBigSmall(predictedNumber);
+        document.getElementById('color-prediction').textContent = getColor(predictedNumber);
+
+        historyResults.unshift({ number: predictedNumber, period: periodNumber });
+        renderHistory();
+
+        document.getElementById('loading-spinner').classList.add('hidden');
+      }, 4000);
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history');
+      container.innerHTML = '';
+      historyResults.forEach(r => {
+        const size = getBigSmall(r.number);
+        const color = getColor(r.number);
+        const dotColor = color === 'Red' ? 'bg-red-500' : color === 'Green' ? 'bg-green-500' : 'bg-purple-500';
+
+        container.innerHTML += `
+          <div class="flex justify-between items-center bg-gray-800 rounded py-2 px-4">
+            <div class="flex items-center space-x-2">
+              <div class="w-3 h-3 ${dotColor} rounded-full"></div>
+              <div class="text-white font-semibold text-lg">${r.number}</div>
+            </div>
+            <div class="text-sm text-gray-300">Period: ${r.period} - (${size} / ${color})</div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
